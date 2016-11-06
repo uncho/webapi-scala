@@ -1,14 +1,21 @@
 package controllers
 
+import models.db._
+
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+import javax.inject.Inject
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json.{JsString, JsNumber, Json}
 
-/**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
-class HomeController extends Controller {
+
+
+
+class HomeController @Inject() (user_dao: UserDAO)  extends Controller {
 
   val names = List("tarou","baka","chinko","unko")
   val items = List(1, 2, 2)
@@ -28,8 +35,12 @@ class HomeController extends Controller {
     Json.toJson(profiles)
   }
 
-  def index = Action {
+  def index() = Action {
     Ok(views.html.index("testString"))
+  }
+
+  def userList = Action.async {
+    user_dao.searchAll.map(users => Ok(users.toString()))
   }
 
 }
